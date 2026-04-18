@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>System Scan – Questions</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+
+	<body>
+		<!-- Falling binary background (same as index.html) -->
+		<script src="index.js"></script>
+
+		<!-- Terminal window -->
+		<div class="laptop">
+			<div class="screen">
+				<div class="terminal-body">
+					<!-- Progress bar -->
+					<div class="progress-bar-container">
+						<div class="progress-bar" id="progressBar"></div>
+						<span class="progress-label" id="progressLabel">0%</span>
+					</div>
+
+					<!-- Question & input area -->
+					<div class="terminal-content">
+						<div class="question-text" id="questionText"></div>
+						<div class="input-line">
+							<span class="prompt-symbol">&gt;</span>
+							<input
+								class="answer-input"
+								id="answerInput"
+								type="text"
+								autocomplete="off"
+								autofocus
+							/>
+						</div>
+						<!-- Whisper hint -->
+						<div class="whisper-text" id="whisperText"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Completion popup -->
+		<div class="popup-overlay" id="popupOverlay">
+			<div class="popup-box">
+				<div class="popup-status">[ SCAN COMPLETE ]</div>
+				<div class="popup-title">You're Safe!</div>
+				<div class="popup-message" id="popupMessage">
+					<!-- filled by JS -->
+				</div>
+				<div class="popup-warning">
+					⚠️ Stay alert! If this were a real attack, clicking that random link
+					could have exposed all your data and harmed your device. Always think
+					before you click — your security is in your hands.
+				</div>
+				<a href="#" class="popup-btn" id="eventBtn"> → IEEE Event Details </a>
+			</div>
+		</div>
+
+		<script src="questions.js"></script>
+	</body>
+</html>
