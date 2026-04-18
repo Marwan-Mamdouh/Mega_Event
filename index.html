@@ -1,153 +1,28 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Hacked Screen</title>
+		<title>Hacked Screen</title>
 
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+		<link
+			href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="style.css" />
+	</head>
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: "VT323", monospace;
-}
+	<body>
+		<div class="laptop">
+			<div class="screen">
+				<div class="hacked-text">
+					HACKED
+					<div class="sub-text">SYSTEM BREACHED</div>
+				</div>
+			</div>
+		</div>
 
-body{
-    height:100vh;
-    overflow:hidden;
-    background: radial-gradient(circle, #001f3f, #000);
-}
-
-/* LAPTOP RESPONSIVE */
-.laptop{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:90%;
-    max-width:800px;
-    aspect-ratio:16/9;
-    background:#0a0a0a;
-    border-radius:15px;
-    border:3px solid #111;
-    box-shadow:0 0 50px rgba(0,150,255,0.3);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:10; 
-}
-
-.screen{
-    width:95%;
-    height:90%;
-    background:#000;
-    border-radius:10px;
-    border:2px solid #222;
-    position:relative;
-    overflow:hidden;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:10px;
-}
-
-/* TEXT RESPONSIVE */
-.hacked-text{
-    text-align:center;
-    font-size:clamp(60px, 10vw, 200px);
-    color:#00ccff;
-    text-shadow: 0 0 15px #00ccff, 0 0 30px #0088ff;
-}
-
-.sub-text{
-    font-size:clamp(14px, 2vw, 24px);
-    color:#00ffaa;
-    margin-top:10px;
-}
-
-/* BINARY EFFECT */
-.binary{
-    position:fixed;
-    top:0;
-    color:#00ffcc;
-    font-size:14px;
-    opacity:0.5;
-    animation: fall linear infinite;
-    z-index:1;
-}
-
-@keyframes fall{
-    0%{
-        transform:translateY(-50px);
-        opacity:1;
-    }
-    100%{
-        transform:translateY(100vh);
-        opacity:0;
-    }
-}
-
-/* MOBILE EXTRA */
-@media (max-width:480px){
-    .laptop{
-        border-radius:10px;
-    }
-
-    .hacked-text{
-        font-size:50px;
-    }
-
-    .sub-text{
-        font-size:12px;
-    }
-}
-</style>
-
-</head>
-
-<body>
-
-<div class="laptop">
-    <div class="screen">
-        <div class="hacked-text">
-            HACKED
-            <div class="sub-text">SYSTEM BREACHED</div>
-        </div>
-    </div>
-</div>
-
-<script>
-function createBinary(){
-    const binary = document.createElement("div");
-    binary.classList.add("binary");
-
-    let text="";
-    for(let i=0;i<30;i++){
-        text += Math.random() > 0.5 ? "1" : "0";
-    }
-
-    binary.innerText = text;
-
-    binary.style.left = Math.random() * 100 + "vw";
-
-    /* SPEED INCREASED */
-    binary.style.animationDuration = (0.5 + Math.random()*1) + "s";
-
-    document.body.appendChild(binary);
-
-    setTimeout(()=>{
-        binary.remove();
-    },3000);
-}
-
-/* MORE DENSITY + SPEED */
-setInterval(createBinary, 30);
-</script>
-
-</body>
+		<script src="index.js"></script>
+	</body>
 </html>
