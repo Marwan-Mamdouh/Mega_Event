@@ -68,10 +68,11 @@ function showQuestion(index) {
 	// The first question (index 0) is the name question and does NOT count.
 	// We only track progress through the remaining 3 questions (indices 1-3).
 	const trackable = QUESTIONS.length - 1; // 3
-	const answered = Math.max(0, index - 1);  // how many of the 3 have been answered
+	const answered = Math.max(0, index - 1); // how many of the 3 have been answered
 	const pct = Math.round((answered / trackable) * 100);
 	progressBar.style.width = pct + "%";
 	progressLabel.textContent = pct + "%";
+	progressLabel.style.color = pct > 50 ? "black" : "white";
 
 	// Start whisper cycle for this question
 	startWhispers(whisper);
@@ -86,6 +87,7 @@ function startWhispers(hint) {
 
 	// First whisper appears after 10 seconds
 	function cycle() {
+		if (whisperTimeout) clearTimeout(whisperTimeout);
 		whisperEl.classList.add("visible");
 		whisperTimeout = setTimeout(() => {
 			whisperEl.classList.remove("visible");
@@ -106,10 +108,13 @@ function clearWhispers() {
 /** Show the final popup after all questions are answered. */
 function showPopup() {
 	clearWhispers();
+	answerInput.removeEventListener("keydown", onEnter);
+	globalThis.stopBinary?.();
 
 	// Fill progress bar to 100%
 	progressBar.style.width = "100%";
 	progressLabel.textContent = "100%";
+	progressLabel.style.color = "black";
 
 	// Update the IEEE button link
 	eventBtn.href = IEEE_EVENT_URL;
@@ -134,7 +139,7 @@ function escapeHtml(str) {
 }
 
 // ─── Event Listener: Enter key to submit answer ───────────────────
-answerInput.addEventListener("keydown", (e) => {
+function onEnter(e) {
 	if (e.key !== "Enter") return;
 
 	const answer = answerInput.value.trim();
@@ -152,7 +157,8 @@ answerInput.addEventListener("keydown", (e) => {
 	} else {
 		showPopup();
 	}
-});
+}
+answerInput.addEventListener("keydown", onEnter);
 
 // ─── Init ──────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
