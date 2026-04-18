@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,13 +23,15 @@ body{
     background: radial-gradient(circle, #001f3f, #000);
 }
 
+/* LAPTOP RESPONSIVE */
 .laptop{
     position:absolute;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:800px;
-    height:450px;
+    width:90%;
+    max-width:800px;
+    aspect-ratio:16/9;
     background:#0a0a0a;
     border-radius:15px;
     border:3px solid #111;
@@ -42,8 +43,8 @@ body{
 }
 
 .screen{
-    width:92%;
-    height:85%;
+    width:95%;
+    height:90%;
     background:#000;
     border-radius:10px;
     border:2px solid #222;
@@ -52,20 +53,24 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
+    padding:10px;
 }
 
+/* TEXT RESPONSIVE */
 .hacked-text{
     text-align:center;
-    font-size:200px; 
+    font-size:clamp(60px, 10vw, 200px);
     color:#00ccff;
     text-shadow: 0 0 15px #00ccff, 0 0 30px #0088ff;
 }
+
 .sub-text{
-    font-size:24px;
+    font-size:clamp(14px, 2vw, 24px);
     color:#00ffaa;
-    margin-top:15px;
+    margin-top:10px;
 }
 
+/* BINARY EFFECT */
 .binary{
     position:fixed;
     top:0;
@@ -84,6 +89,21 @@ body{
     100%{
         transform:translateY(100vh);
         opacity:0;
+    }
+}
+
+/* MOBILE EXTRA */
+@media (max-width:480px){
+    .laptop{
+        border-radius:10px;
+    }
+
+    .hacked-text{
+        font-size:50px;
+    }
+
+    .sub-text{
+        font-size:12px;
     }
 }
 </style>
@@ -115,16 +135,18 @@ function createBinary(){
 
     binary.style.left = Math.random() * 100 + "vw";
 
-binary.style.animationDuration = (1 + Math.random()*2) + "s";
+    /* SPEED INCREASED */
+    binary.style.animationDuration = (0.5 + Math.random()*1) + "s";
 
     document.body.appendChild(binary);
 
     setTimeout(()=>{
         binary.remove();
-    },7000);
+    },3000);
 }
-setInterval(createBinary, 50);
 
+/* MORE DENSITY + SPEED */
+setInterval(createBinary, 30);
 </script>
 
 </body>
