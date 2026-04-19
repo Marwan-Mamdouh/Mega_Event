@@ -3,7 +3,8 @@ globalThis.stopBinary = () => {
 	if (binaryInterval) clearInterval(binaryInterval);
 };
 globalThis.addEventListener("DOMContentLoaded", () => {
-	binaryInterval = setInterval(createBinary, 50);
+	/* MORE DENSITY + SPEED */
+	binaryInterval = setInterval(createBinary, 30);
 
 	const payBtn = document.getElementById("payBtn");
 	const screen = document.querySelector(".screen");
@@ -38,10 +39,12 @@ function createBinary() {
 
 	binary.innerText = text;
 	binary.style.left = Math.random() * 100 + "vw";
-	binary.style.animationDuration = 1 + Math.random() * 2 + "s";
+	/* SPEED INCREASED */
+	binary.style.animationDuration = 0.5 + Math.random() * 1 + "s";
+
 	document.body.appendChild(binary);
 
 	setTimeout(() => {
 		binary.remove();
-	}, 7000);
+	}, 3000);
 }

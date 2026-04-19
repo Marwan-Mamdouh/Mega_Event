@@ -11,15 +11,15 @@ body {
 	background: radial-gradient(circle, #001f3f, #000);
 }
 
+/* LAPTOP RESPONSIVE */
 .laptop {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 800px;
-	height: 450px;
-	max-width: 90vw;
-	max-height: 90vh;
+	width: 90%;
+	max-width: 800px;
+	aspect-ratio: 16/9;
 	background: #0a0a0a;
 	border-radius: 15px;
 	border: 3px solid #111;
@@ -202,9 +202,17 @@ body {
 }
 
 @keyframes pulse {
-	0%   { text-shadow: 0 0 8px currentColor; }
-	50%  { text-shadow: 0 0 22px currentColor, 0 0 40px currentColor; }
-	100% { text-shadow: 0 0 8px currentColor; }
+	0% {
+		text-shadow: 0 0 8px currentColor;
+	}
+	50% {
+		text-shadow:
+			0 0 22px currentColor,
+			0 0 40px currentColor;
+	}
+	100% {
+		text-shadow: 0 0 8px currentColor;
+	}
 }
 
 /* ─────────────────────────────────────────
@@ -339,9 +347,24 @@ body {
 	}
 }
 
+/* MOBILE EXTRA */
+@media (max-width: 480px) {
+	.laptop {
+		border-radius: 10px;
+	}
+
+	.hacked-text {
+		font-size: 50px;
+	}
+
+	.sub-text {
+		font-size: 12px;
+	}
+}
+
 .screen {
-	width: 92%;
-	height: 85%;
+	width: 95%;
+	height: 90%;
 	background: #000;
 	border-radius: 10px;
 	border: 2px solid #222;
@@ -350,11 +373,12 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	padding: 10px;
 }
 
 .hacked-text {
 	text-align: center;
-	font-size: 130px;
+	font-size: clamp(60px, 10vw, 200px);
 	color: #00ccff;
 	text-shadow:
 		0 0 15px #00ccff,
@@ -363,10 +387,11 @@ body {
 	flex-direction: column;
 	align-items: center;
 }
+
 .sub-text {
-	font-size: 24px;
+	font-size: clamp(14px, 2vw, 24px);
 	color: #00ffaa;
-	margin-top: -10px;
+	margin-top: 10px;
 }
 
 .threat-message {
@@ -405,6 +430,7 @@ body {
 	box-shadow: 0 0 15px #00ccff;
 }
 
+/* BINARY EFFECT */
 .binary {
 	position: fixed;
 	top: 0;

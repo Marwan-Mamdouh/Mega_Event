@@ -201,7 +201,7 @@ async function onEnter(e) {
 	if (!answer) return;
 
 	// Refuse purely numeric answers (e.g. "123", but "hello123" is fine)
-	if (!Number.isNaN(answer)) {
+	if (!isNaN(answer)) {
 		isTransitioning = true;
 
 		// Fade out main, show error, fade back in
