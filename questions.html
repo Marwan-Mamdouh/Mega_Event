@@ -27,16 +27,21 @@
 
 					<!-- Question & input area -->
 					<div class="terminal-content">
-						<div class="question-text" id="questionText"></div>
-						<div class="input-line">
-							<span class="prompt-symbol">&gt;</span>
-							<input
-								class="answer-input"
-								id="answerInput"
-								type="text"
-								autocomplete="off"
-								autofocus
-							/>
+						<!-- Overlay message for steps/processing/errors -->
+						<div class="overlay-message" id="overlayMessage"></div>
+
+						<div id="mainContent">
+							<div class="question-text" id="questionText"></div>
+							<div class="input-line">
+								<span class="prompt-symbol">&gt;</span>
+								<input
+									class="answer-input"
+									id="answerInput"
+									type="text"
+									autocomplete="off"
+									autofocus
+								/>
+							</div>
 						</div>
 						<!-- Whisper hint -->
 						<div class="whisper-text" id="whisperText"></div>

@@ -5,16 +5,13 @@
  */
 
 // ─── Questions Data ────────────────────────────────────────────────
-// Each entry: { question, whisper }
-// Fill in your own questions and whispers for entries 2-4.
 const QUESTIONS = [
 	{
 		question: "Who are you?",
 		whisper: "// hint: just type your name...",
 	},
 	{
-		question: `Imagine the API suddenly changes its response schema.
-What exactly does the AI Agent in n8n do to understand the new schema and automatically remap the nodes?`,
+		question: `Imagine the API suddenly changes its response schema.\nWhat exactly does the AI Agent in n8n do to understand the new schema and automatically remap the nodes?`,
 		whisper: "// hint: search about n8n or just ask chatgpt",
 	},
 	{
@@ -27,7 +24,10 @@ What exactly does the AI Agent in n8n do to understand the new schema and automa
 	},
 ];
 
-// IEEE event link — update this when you have the real URL
+// ─── Step Names ────────────────────────────────────────────────────
+const STEP_NAMES = ["First Step", "Second Step", "Third Step", "Final Step"];
+
+// ─── IEEE Event URL — update when the real link is ready ──────────
 const IEEE_EVENT_URL = "#";
 
 // ─── State ─────────────────────────────────────────────────────────
@@ -35,6 +35,7 @@ let currentIndex = 0;
 let userName = "";
 let whisperInterval = null;
 let whisperTimeout = null;
+let isTransitioning = false;
 
 // ─── DOM References ────────────────────────────────────────────────
 const questionText = document.getElementById("questionText");
@@ -45,56 +46,64 @@ const whisperEl = document.getElementById("whisperText");
 const popupOverlay = document.getElementById("popupOverlay");
 const popupMessage = document.getElementById("popupMessage");
 const eventBtn = document.getElementById("eventBtn");
+const overlayMsg = document.getElementById("overlayMessage");
+const mainContent = document.getElementById("mainContent");
 
-// ─── Core Functions ────────────────────────────────────────────────
+// ─── Helpers ───────────────────────────────────────────────────────
 
-/** Render the question at `index` and reset all timers. */
-function showQuestion(index) {
-	const { question, whisper } = QUESTIONS[index];
-
-	// Update question text (faded type-in feel via quick swap)
-	questionText.style.opacity = "0";
-	setTimeout(() => {
-		questionText.textContent = question;
-		questionText.style.transition = "opacity 0.4s ease";
-		questionText.style.opacity = "1";
-	}, 150);
-
-	// Clear & reset user input
-	answerInput.value = "";
-	answerInput.focus();
-
-	// Update progress bar.
-	// The first question (index 0) is the name question and does NOT count.
-	// We only track progress through the remaining 3 questions (indices 1-3).
-	const trackable = QUESTIONS.length - 1; // 3
-	const answered = Math.max(0, index - 1); // how many of the 3 have been answered
-	const pct = Math.round((answered / trackable) * 100);
-	progressBar.style.width = pct + "%";
-	progressLabel.textContent = pct + "%";
-	progressLabel.style.color = pct > 50 ? "black" : "white";
-
-	// Start whisper cycle for this question
-	startWhispers(whisper);
+/** Fade an element OUT by swapping classes. Returns a Promise that resolves after the CSS transition. */
+function fadeOut(el, fadeClass = "fade-out") {
+	return new Promise((resolve) => {
+		el.classList.add(fadeClass);
+		setTimeout(resolve, 420); // slightly longer than the 0.4s CSS transition
+	});
 }
 
-/** Whisper cycle: appear for 3s, hide for 10s, repeat. */
-function startWhispers(hint) {
-	clearWhispers(); // clear previous question's timers
+/** Fade an element IN by removing the fade class. */
+function fadeIn(el, fadeClass = "fade-out") {
+	el.classList.remove(fadeClass);
+}
 
+/** Show the overlay message with a given type and text, fading it in. */
+function showOverlay(text, type = "") {
+	overlayMsg.textContent = text;
+	overlayMsg.className = "overlay-message" + (type ? " " + type : "");
+	// Force a reflow so the transition fires even if the element was already "visible"
+	overlayMsg.getBoundingClientRect();
+	overlayMsg.classList.add("visible");
+}
+
+/** Fade out the overlay message. Returns a Promise that resolves after the fade. */
+function hideOverlay() {
+	return new Promise((resolve) => {
+		overlayMsg.classList.remove("visible");
+		setTimeout(resolve, 520); // slightly longer than the 0.5s CSS transition
+	});
+}
+
+/** Sanitise user input before injecting into innerHTML. */
+function escapeHtml(str) {
+	const div = document.createElement("div");
+	div.appendChild(document.createTextNode(str));
+	return div.innerHTML;
+}
+
+// ─── Whisper Cycle ─────────────────────────────────────────────────
+
+/** Whisper cycle: appear for 2s, hide for 8s, repeat. */
+function startWhispers(hint) {
+	clearWhispers();
 	whisperEl.textContent = hint;
 	whisperEl.classList.remove("visible");
 
-	// First whisper appears after 10 seconds
 	function cycle() {
-		if (whisperTimeout) clearTimeout(whisperTimeout);
+		clearTimeout(whisperTimeout);
 		whisperEl.classList.add("visible");
 		whisperTimeout = setTimeout(() => {
 			whisperEl.classList.remove("visible");
-		}, 2000); // visible for 3s
+		}, 2000);
 	}
 
-	// Start the interval: every 13s (10s wait + 3s visible)
 	whisperInterval = setInterval(cycle, 8000);
 }
 
@@ -105,7 +114,59 @@ function clearWhispers() {
 	whisperEl.classList.remove("visible");
 }
 
-/** Show the final popup after all questions are answered. */
+// ─── Progress Bar ──────────────────────────────────────────────────
+
+function updateProgressBar(index) {
+	const trackable = QUESTIONS.length - 1; // first question doesn't count
+	const answered = Math.max(0, index - 1);
+	const pct = Math.round((answered / trackable) * 100);
+	progressBar.style.width = pct + "%";
+	progressLabel.textContent = pct + "%";
+	progressLabel.style.color = pct > 50 ? "black" : "white";
+}
+
+// ─── Core: Show Question ───────────────────────────────────────────
+
+/**
+ * Transition sequence for each question:
+ *  1. Fade OUT current content (mainContent)
+ *  2. Fade IN  step label (e.g. "Second Step")  for 2 s
+ *  3. Fade OUT step label
+ *  4. Swap question text
+ *  5. Fade IN  mainContent with the new question
+ */
+async function showQuestion(index) {
+	const { question, whisper } = QUESTIONS[index];
+	const stepLabel = STEP_NAMES[index] || "Next Step";
+
+	isTransitioning = true;
+	clearWhispers();
+
+	// 1. Fade out main content
+	await fadeOut(mainContent, "fade-out");
+
+	// 2. Show step label
+	showOverlay(stepLabel);
+	await new Promise((r) => setTimeout(r, 2000)); // hold for 2 s
+
+	// 3. Fade out step label
+	await hideOverlay();
+
+	// 4. Swap in the new question text (invisible while mainContent is faded out)
+	questionText.textContent = question;
+	answerInput.value = "";
+
+	// 5. Update progress bar and fade content back in
+	updateProgressBar(index);
+	fadeIn(mainContent, "fade-out");
+	answerInput.focus();
+	startWhispers(whisper);
+
+	isTransitioning = false;
+}
+
+// ─── Core: Completion Popup ────────────────────────────────────────
+
 function showPopup() {
 	clearWhispers();
 	answerInput.removeEventListener("keydown", onEnter);
@@ -121,31 +182,49 @@ function showPopup() {
 
 	// Personalised message
 	popupMessage.innerHTML = `
-		Good news, <span class="name-highlight">${escapeHtml(userName)}</span>! 
-		Your data has been returned to normal and no harm was done to your device 
-		this time. But please be careful — the next time you click a random link 
-		from the internet, the hacker might really hurt your device and steal your 
+		Good news, <span class="name-highlight">${escapeHtml(userName)}</span>!
+		Your data has been returned to normal and no harm was done to your device
+		this time. But please be careful — the next time you click a random link
+		from the internet, the hacker might really hurt your device and steal your
 		personal data if you keep yourself open and unguarded.
 	`;
 
 	popupOverlay.classList.add("active");
 }
 
-/** Sanitise user input before injecting into innerHTML. */
-function escapeHtml(str) {
-	const div = document.createElement("div");
-	div.appendChild(document.createTextNode(str));
-	return div.innerHTML;
-}
+// ─── Event Listener: Enter key ─────────────────────────────────────
 
-// ─── Event Listener: Enter key to submit answer ───────────────────
-function onEnter(e) {
-	if (e.key !== "Enter") return;
+async function onEnter(e) {
+	if (e.key !== "Enter" || isTransitioning) return;
 
 	const answer = answerInput.value.trim();
-	if (!answer) return; // don't advance on empty input
+	if (!answer) return;
 
-	// Save the first answer as the user's name
+	// Refuse purely numeric answers (e.g. "123", but "hello123" is fine)
+	if (!Number.isNaN(answer)) {
+		isTransitioning = true;
+
+		// Fade out main, show error, fade back in
+		await fadeOut(mainContent, "fade-out");
+		showOverlay("Invalid input: numerical entries are not permitted.", "error");
+		await new Promise((r) => setTimeout(r, 2000));
+		await hideOverlay();
+		fadeIn(mainContent, "fade-out");
+		answerInput.value = "";
+		answerInput.focus();
+
+		isTransitioning = false;
+		return;
+	}
+
+	// Valid answer — show processing message
+	isTransitioning = true;
+	await fadeOut(mainContent, "fade-out");
+	showOverlay("Processing answer... please wait.", "processing");
+	await new Promise((r) => setTimeout(r, 1500));
+	await hideOverlay();
+
+	// Save name from first question
 	if (currentIndex === 0) {
 		userName = answer;
 	}
@@ -153,11 +232,16 @@ function onEnter(e) {
 	currentIndex++;
 
 	if (currentIndex < QUESTIONS.length) {
+		// showQuestion handles fading mainContent back in
 		showQuestion(currentIndex);
 	} else {
+		// All done — restore mainContent opacity then show popup
+		fadeIn(mainContent, "fade-out");
+		isTransitioning = false;
 		showPopup();
 	}
 }
+
 answerInput.addEventListener("keydown", onEnter);
 
 // ─── Init ──────────────────────────────────────────────────────────

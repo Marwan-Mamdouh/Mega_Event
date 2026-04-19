@@ -150,6 +150,64 @@ body {
 }
 
 /* ─────────────────────────────────────────
+   OVERLAY & TRANSITION MESSAGES
+   ───────────────────────────────────────── */
+
+/* Overlay message is always in the DOM; we fade it in/out via opacity */
+.overlay-message {
+	opacity: 0;
+	pointer-events: none;
+	font-size: 32px;
+	color: #00ffaa;
+	text-shadow: 0 0 15px #00ffaa;
+	text-align: center;
+	line-height: 1.4;
+	word-break: break-word;
+	transition: opacity 0.5s ease;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 100%;
+	padding: 0 16px;
+	box-sizing: border-box;
+	letter-spacing: 2px;
+	animation: pulse 2s ease-in-out infinite;
+}
+
+.overlay-message.error {
+	color: #ff4444;
+	text-shadow: 0 0 15px #ff4444;
+}
+
+.overlay-message.processing {
+	color: #00ccff;
+	text-shadow: 0 0 15px #00ccff;
+}
+
+.overlay-message.visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* mainContent fades rather than hard-snapping */
+#mainContent {
+	transition: opacity 0.4s ease;
+	opacity: 1;
+}
+
+#mainContent.fade-out {
+	opacity: 0;
+	pointer-events: none;
+}
+
+@keyframes pulse {
+	0%   { text-shadow: 0 0 8px currentColor; }
+	50%  { text-shadow: 0 0 22px currentColor, 0 0 40px currentColor; }
+	100% { text-shadow: 0 0 8px currentColor; }
+}
+
+/* ─────────────────────────────────────────
    POPUP MODAL
 ───────────────────────────────────────── */
 
