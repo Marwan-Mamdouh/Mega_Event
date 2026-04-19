@@ -17,9 +17,11 @@ body {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 90%;
+	width: min(90%, 800px);
 	max-width: 800px;
-	aspect-ratio: 16/9;
+	height: auto;
+	max-height: calc(100vh - 40px);
+	aspect-ratio: 16 / 9;
 	background: #0a0a0a;
 	border-radius: 15px;
 	border: 3px solid #111;
@@ -28,16 +30,18 @@ body {
 	justify-content: center;
 	align-items: center;
 	z-index: 10;
+	overflow: hidden;
 }
 
 /* ─────────────────────────────────────────
-   QUESTIONS PAGE STYLES
+  QUESTIONS PAGE STYLES
 ───────────────────────────────────────── */
 
 /* Terminal inner container */
 .terminal-body {
 	width: 100%;
 	height: 100%;
+	min-height: 280px;
 	padding: 18px 24px;
 	display: flex;
 	flex-direction: column;
@@ -89,11 +93,14 @@ body {
 /* Terminal content area */
 .terminal-content {
 	flex: 1;
+	min-height: 0;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	gap: 12px;
 	position: relative;
+	overflow: hidden;
+	overflow-y: auto;
 }
 
 /* The question prompt label */
@@ -108,6 +115,7 @@ body {
 /* The prompt line with > and user input */
 .input-line {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px;
 }
@@ -128,6 +136,7 @@ body {
 	font-size: 22px;
 	caret-color: #00ccff;
 	width: 100%;
+	min-width: 0;
 }
 
 /* Whisper hint text */
@@ -363,8 +372,10 @@ body {
 }
 
 .screen {
-	width: 95%;
-	height: 90%;
+	width: min(95%, 760px);
+	height: auto;
+	min-height: 320px;
+	max-height: calc(100vh - 60px);
 	background: #000;
 	border-radius: 10px;
 	border: 2px solid #222;
@@ -428,6 +439,78 @@ body {
 	background: #00ccff;
 	color: #000;
 	box-shadow: 0 0 15px #00ccff;
+}
+
+@media (max-width: 720px) {
+	.laptop {
+		width: min(95vw, 700px);
+		max-height: calc(100vh - 30px);
+		aspect-ratio: auto;
+	}
+
+	.screen {
+		width: 100%;
+		max-width: 100%;
+		padding: 12px;
+	}
+
+	.terminal-body {
+		padding: 14px 16px;
+	}
+
+	.question-text,
+	.prompt-symbol,
+	.answer-input {
+		font-size: 18px;
+	}
+
+	.progress-bar-container {
+		height: 22px;
+	}
+
+	.progress-label {
+		font-size: 14px;
+	}
+}
+
+@media (max-width: 520px) {
+	.laptop {
+		width: calc(100vw - 22px);
+		border-radius: 10px;
+		max-height: calc(100vh - 24px);
+	}
+
+	.screen {
+		min-height: 260px;
+		padding: 10px;
+		border-radius: 8px;
+	}
+
+	.input-line {
+		gap: 6px;
+	}
+
+	.action-buttons {
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.screen-btn {
+		font-size: 16px;
+		padding: 10px 16px;
+		width: 100%;
+		max-width: 260px;
+		text-align: center;
+	}
+
+	.whisper-text {
+		font-size: 13px;
+	}
+
+	.overlay-message {
+		font-size: 24px;
+		padding: 0 12px;
+	}
 }
 
 /* BINARY EFFECT */
